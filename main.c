@@ -232,3 +232,29 @@ void getAllCodes(TreeNode *root, HuffmanCode codes[])
     char path[MAX_CODE_LENGTH + 1];
     generateCodes(root, codes, path, 0);
 }
+
+
+void printCodeTable(HuffmanCode codes[], unsigned int frequency[])
+{
+    printf("\n--- Huffman Code Table ---\n");
+    printf("Character   Times Used   Code\n");
+    printf("------------------------------\n");
+    for (int i = 0; i < MAX_CHARACTERS; i++)
+    {
+        if (codes[i].codeLength == 0) continue;
+        if (i >= 32 && i < 127)
+            printf("    %c           %-5u        %s\n", i, frequency[i], codes[i].codeString);
+        else
+            printf("  0x%02X         %-5u        %s\n", i, frequency[i], codes[i].codeString);
+    }
+}
+
+void printCompressedOutput(char inputText[], int length, HuffmanCode codes[])
+{
+    printf("\n--- Compressed Output ---\n");
+    for (int i = 0; i < length; i++)
+    {
+        printf("%s ", codes[(unsigned char)inputText[i]].codeString);
+    }
+    printf("\n");
+}
