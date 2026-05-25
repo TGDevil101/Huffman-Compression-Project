@@ -172,3 +172,63 @@ TreeNode *buildHuffmanTree(unsigned int frequency[])
     deleteQueue(queue);
     return treeRoot;
 }
+
+
+void deleteTree(TreeNode *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    deleteTree(node->leftChild);
+    deleteTree(node->rightChild);
+    free(node);
+}
+
+int isLeafNode(TreeNode *node)
+{
+    return (node != NULL) && (node->leftChild == NULL) && (node->rightChild == NULL);
+}
+
+void generateCodes(TreeNode *node, HuffmanCode codes[], char currentPath[], int depth)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    if (isLeafNode(node))
+    {
+        int index = (unsigned char)node->character;
+        if (depth == 0)
+        {
+            codes[index].codeString[0] = '0';
+            codes[index].codeString[1] = '\0';
+            codes[index].codeLength = 1;
+        }
+        else
+        {
+            currentPath[depth] = '\0';
+            codes[index].codeLength = depth;
+            for (int i = 0; i <= depth; i++)
+            {
+                codes[index].codeString[i] = currentPath[i];
+            }
+        }
+        return;
+    }
+    currentPath[depth] = '0';
+    generateCodes(node->leftChild,  codes, currentPath, depth + 1);
+    currentPath[depth] = '1';
+    generateCodes(node->rightChild, codes, currentPath, depth + 1);
+}
+
+void getAllCodes(TreeNode *root, HuffmanCode codes[])
+{
+    for (int i = 0; i < MAX_CHARACTERS; i++)
+    {
+        codes[i].codeLength = 0;
+        codes[i].codeString[0] = '\0';
+    }
+    char path[MAX_CODE_LENGTH + 1];
+    generateCodes(root, codes, path, 0);
+}
