@@ -241,7 +241,10 @@ void printCodeTable(HuffmanCode codes[], unsigned int frequency[])
     printf("------------------------------\n");
     for (int i = 0; i < MAX_CHARACTERS; i++)
     {
-        if (codes[i].codeLength == 0) continue;
+        if (codes[i].codeLength == 0)
+        {
+            continue;
+        }
         if (i >= 32 && i < 127)
             printf("    %c           %-5u        %s\n", i, frequency[i], codes[i].codeString);
         else
@@ -257,4 +260,46 @@ void printCompressedOutput(char inputText[], int length, HuffmanCode codes[])
         printf("%s ", codes[(unsigned char)inputText[i]].codeString);
     }
     printf("\n");
+}
+
+
+int main()
+{
+    char inputText[1000];
+    printf("Enter text: ");
+    fgets(inputText, sizeof(inputText), stdin);
+    int length = strlen(inputText);
+    if (inputText[length - 1] == '\n')
+    {
+        inputText[length - 1] = '\0';
+        length--;
+    }
+    if (length == 0)
+    {
+        printf("You didn't enter anything!\n");
+        return 1;
+    }
+    unsigned int frequency[MAX_CHARACTERS];
+    for (int i = 0; i < MAX_CHARACTERS; i++) frequency[i] = 0;
+    for (int i = 0; i < length; i++)
+    {
+        frequency[(unsigned char)inputText[i]]++;
+    }
+    TreeNode *root = buildHuffmanTree(frequency);
+    HuffmanCode codes[MAX_CHARACTERS];
+    getAllCodes(root, codes);
+    printCodeTable(codes, frequency);
+    printCompressedOutput(inputText, length, codes);
+    int originalBits = length * 8;
+    int compressedBits = 0;
+    for (int i = 0; i < length; i++)
+    {
+        compressedBits += codes[(unsigned char)inputText[i]].codeLength;
+    }
+    printf("\n--- Stats ---\n");
+    printf("Original  : %d bits  (%d characters x 8 bits each)\n", originalBits, length);
+    printf("Compressed: %d bits\n", compressedBits);
+    printf("Saved     : %.2f%%\n", 100.0 * (originalBits - compressedBits) / originalBits);
+    deleteTree(root);
+    return 0;
 }
